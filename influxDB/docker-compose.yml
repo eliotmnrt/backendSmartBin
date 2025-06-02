@@ -1,0 +1,17 @@
+version: '3'
+services:
+  influxdb:
+    image: influxdb:2.7
+    ports:
+      - "8086:8086"
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=admin
+      - DOCKER_INFLUXDB_INIT_PASSWORD=admin123
+      - DOCKER_INFLUXDB_INIT_ORG=smartbin-org
+      - DOCKER_INFLUXDB_INIT_BUCKET=smartbin_data
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=my-super-token-for-smartbin
+    volumes:
+      - influxdb-data:/var/lib/influxdb2
+volumes:
+  influxdb-data:
