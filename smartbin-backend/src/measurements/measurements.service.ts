@@ -15,10 +15,10 @@ export class MeasurementsService {
   private org;
 
   constructor(private configService: ConfigService) {
-    const url = this.configService.get<string>('INFLUX_URL') || 'http://localhost:8086'; // URL par défaut si non défini
-    const token = this.configService.get<string>('INFLUX_TOKEN') || 'my-token';
-    this.bucket = this.configService.get<string>('INFLUX_BUCKET');
-    this.org = this.configService.get<string>('INFLUX_ORG');
+    const url = process.env.INFLUX_URL || 'http://localhost:8086'; // URL par défaut si non défini
+    const token = process.env.INFLUX_TOKEN || 'my-token';
+    this.bucket = process.env.INFLUX_BUCKET;
+    this.org = process.env.INFLUX_ORG;
     console.log('Connecting to InfluxDB with URL:', url, 'Bucket:', this.bucket, 'Org:', this.org);
 
     this.influx = new InfluxDB({url, token});
