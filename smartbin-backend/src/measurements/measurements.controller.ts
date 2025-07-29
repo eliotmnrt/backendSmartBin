@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { CreateMeasurementDto } from './dto/measurement.dto';
 import { MeasurementsService } from './measurements.service';
 
@@ -11,5 +11,12 @@ export class MeasurementsController {
         console.log('Received measurement:', dto);
         await this.service.saveMeasurement(dto);
         return { status: 'ok' };
+    }
+
+    @Get()
+    async getMeasurements() {
+        console.log('Fetching all measurements');
+        const measurements = await this.service.getAllMeasurements();
+        return measurements;
     }
 }
