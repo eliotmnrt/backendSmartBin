@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { CreateMeasurementDto } from './dto/measurement.dto';
 import { InfluxDB, Point } from '@influxdata/influxdb-client';
 import { log } from 'console';
+import { ConfigService } from '@nestjs/config';
+
 
 
 @Injectable()
@@ -9,12 +11,15 @@ export class MeasurementsService {
   private influx: InfluxDB;
   private influxWriteApi;
   private influxQueryApi;
-  private bucket = 'smartbin_data';
-  private org = 'smartbin-org';
+  private bucket;
+  private org;
 
-  constructor() {
-    const url = 'http://localhost:8086';
-    const token = 'my-super-token-for-smartbin';
+  constructor(private configService: ConfigService) {
+    const url = this.configService.get<string>('INFLUX_URL') || 'http://localhost:8086'; // URL par défaut si non défini
+    const token = this.configService.get<string>('INFLUX_TOKEN') || 'my-token';
+    this.bucket = this.configService.get<string>('INFLUX_BUCKET');
+    this.org = this.configService.get<string>('INFLUX_ORG');
+    console.log('Connecting to InfluxDB with URL:', url, 'Bucket:', this.bucket, 'Org:', this.org);
 
     this.influx = new InfluxDB({url, token});
     this.influxWriteApi = this.influx.getWriteApi(this.org, this.bucket);
@@ -34,7 +39,7 @@ export class MeasurementsService {
 
   async getAllMeasurements() {
     const fluxQuery = `
-      from(bucket: "smartbin_data")
+      from(bucket: "data")
       |> range(start: 0)
       |> filter(fn: (r) => r["_measurement"] == "smartbin_measurements")
       |> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")
